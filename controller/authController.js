@@ -93,9 +93,12 @@ const register = asyncHandler(async (req, res) => {
 
     }
 
+    // Xác định role: chỉ 'admin@gmail.com' mới được làm admin, còn lại là user
+    const role = email === "admin@gmail.com" ? "admin" : "user";
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const newUser = new UserModel({ email, fullname, password: hashedPassword ,photoURL});
+    const newUser = new UserModel({ email, fullname, password: hashedPassword ,photoURL ,role});
     await newUser.save();
     res.status(200).json({
         message: "User created!",
@@ -104,7 +107,8 @@ const register = asyncHandler(async (req, res) => {
             email: newUser.email,
             fullname: newUser.fullname,
             accesstoken: await getJWT(email, newUser.id),
-            photoURL: newUser.photoURL
+            photoURL: newUser.photoURL,
+            role: newUser.role,
         }
 
     });
