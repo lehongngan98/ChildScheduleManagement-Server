@@ -134,21 +134,39 @@ const updateChild = async (req, res) => {
 
 const deleteChild = async (req, res) => {
   try {
-    const child = await Child.findById(req.params.id);
+    const userId = req.user._id;
+    const childId = req.params.id;
 
+    console.log(`Yêu cầu xóa trẻ ID: ${childId}, từ user: ${userId}`);
+
+    // Tìm trẻ theo ID
+    const child = await Child.findById(childId);
     if (!child) {
       console.log("Không tìm thấy trẻ");
       return res.status(404).json({ message: "Không tìm thấy trẻ" });
     }
 
+    // Xác nhận người dùng có sở hữu trẻ này không
+    const user = await UserModel.findById(userId);
+    if (!user || !user.child.includes(childId)) {
+      return res.status(403).json({ message: "Bạn không có quyền xóa trẻ này" });
+    }
+
+    // Xóa ID của trẻ khỏi danh sách của người dùng
+    user.child = user.child.filter((id) => id.toString() !== childId);
+    await user.save();
+
+    // Xóa hồ sơ trẻ khỏi database
     await child.deleteOne();
-    console.log("Xóa thành công");
-    res.status(200).json({ message: "Xóa thành công" });
+
+    console.log("Xóa hồ sơ trẻ thành công:", childId);
+    res.status(200).json({ message: "Xóa hồ sơ trẻ thành công" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server", error });
+    console.error("Lỗi khi xóa trẻ:", error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 };
+
 
 module.exports = {
   addChild,
