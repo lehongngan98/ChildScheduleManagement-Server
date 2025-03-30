@@ -32,6 +32,12 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    child: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Children",
+      }, 
+    ],
   },
   { timestamps: true }
 );

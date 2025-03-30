@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const authRouter = require('./routers/authRouter');
 const childrenRouter = require('./routers/childrenRouter');
+const thoiGianBieuRouter = require('./routers/thoiGianBieuRouter');
 
 const connectDB = require('./configs/connectDB');
 const errorMiddleHandle = require('./middlewares/errorMiddleWare');
@@ -20,6 +21,7 @@ const PORT = 3000;
 
 app.use('/auth', authRouter);
 app.use('/api/children', childrenRouter);
+app.use('/api/thoigianbieu', thoiGianBieuRouter);
 
 
 

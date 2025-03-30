@@ -109,6 +109,7 @@ const register = asyncHandler(async (req, res) => {
             accesstoken: await getJWT(email, newUser.id),
             photoURL: newUser.photoURL,
             role: newUser.role,
+            
         }
 
     });
@@ -144,6 +145,7 @@ const login = asyncHandler(async (req, res) => {
             email: existUser.email,
             fullname: existUser.fullname,
             accesstoken: await getJWT(email, existUser.id),
+            role: existUser.role,
         }
     });
 });
@@ -271,6 +273,43 @@ const handleLoginWithGoogle = asyncHandler(async (req, res) => {
     });
 });
 
+// Thêm child vào danh sách của user
+const updateUserChild = asyncHandler(async (req, res) => {
+    const { userId, childId } = req.body;
+
+    if (!userId || !childId) {
+        return res.status(400).json({ message: "User ID and Child ID are required." });
+    }
+
+    try {
+        const user = await UserModel.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Kiểm tra xem childId đã tồn tại trong danh sách chưa
+        if (user.child.includes(childId)) {
+            return res.status(400).json({ message: "Child already exists for this user." });
+        }
+
+        // Thêm child mới vào danh sách
+        user.child.push(childId);
+        user.updatedAt = Date.now(); // Cập nhật thời gian cập nhật
+
+        await user.save();
+
+        res.status(200).json({
+            message: "Child added successfully!",
+            data: user,
+        });
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+});
+
+
 
 module.exports = {
     register,
@@ -278,5 +317,6 @@ module.exports = {
     verification,
     forgotPassword,
     handleLoginWithGoogle,
-    changePassword
+    changePassword,
+    updateUserChild
 }

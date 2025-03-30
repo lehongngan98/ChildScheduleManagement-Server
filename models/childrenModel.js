@@ -1,19 +1,28 @@
 const mongoose = require("mongoose");
 
-const ChildrenSchema = new mongoose.Schema(
+const ChildSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    dateOfBirth: {
+      type: Date,
       required: true,
     },
-    name: { type: String, required: true },
-    birthYear: { type: Number, required: true },
-    gender: { type: String, enum: ["Nam", "Nữ", "Khác"], required: true },
-    schedules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Schedule" }],
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+      required: true,
+    },
+    level: {
+      type: String,
+      enum: ["Cấp 1", "Cấp 2", "Cấp 3", "Đại học/Cao Đẳng"],
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-const Children = mongoose.model("Children", ChildrenSchema);
-module.exports = Children;
+module.exports = mongoose.model("Children", ChildSchema);
