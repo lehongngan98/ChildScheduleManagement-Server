@@ -5,6 +5,10 @@ const childrenRouter = require('./routers/childrenRouter');
 const thoiGianBieuRouter = require('./routers/thoiGianBieuRouter');
 const scheduleRouter = require('./routers/scheduleRouter');
 const evaluationRouter = require("./routers/evaluationRouter");
+const rankingRoutes = require('./routers/rankingRoutes');
+const userRoutes = require('./routers/userRoutes');
+
+
 
 const connectDB = require('./configs/connectDB');
 const errorMiddleHandle = require('./middlewares/errorMiddleWare');
@@ -26,7 +30,8 @@ app.use('/api/children', childrenRouter);
 app.use('/api/thoigianbieu', thoiGianBieuRouter);
 app.use('/api/schedule', scheduleRouter);
 app.use("/api/evaluation", evaluationRouter);
-
+app.use('/api/rankings', rankingRoutes);
+app.use('/api/users', userRoutes);
 
 app.use(errorMiddleHandle);
 
