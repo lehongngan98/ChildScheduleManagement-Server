@@ -127,7 +127,9 @@ const deleteChild = async (req, res) => {
 
     const user = await UserModel.findById(userId);
     if (!user || !user.child.includes(childId)) {
-      return res.status(403).json({ message: "Bạn không có quyền xóa trẻ này" });
+      return res
+        .status(403)
+        .json({ message: "Bạn không có quyền xóa trẻ này" });
     }
 
     // Xóa khỏi danh sách user
