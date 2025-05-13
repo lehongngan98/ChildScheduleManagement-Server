@@ -1,41 +1,40 @@
 const Evaluation = require("../models/evalutionModel");
 const ThoiGianBieu = require("../models/thoiGianBieu");
 
+// controllers/evaluationController.js
 const completeEvaluation = async (req, res) => {
   try {
-    const { childId, date, evaluations } = req.body;
-
-    if (!childId || !date || !evaluations || !Array.isArray(evaluations)) {
+    const { childId, date, totalScore, evaluations } = req.body;
+    if (!childId || !date || !Array.isArray(evaluations)) {
       return res.status(400).json({ message: "Thiếu dữ liệu đầu vào!" });
     }
 
-    // Validate each activity
-    for (const evaluation of evaluations) {
-      const activity = await ThoiGianBieu.findById(evaluation.activityId);
-      if (!activity) {
-        return res
-          .status(404)
-          .json({ message: `Không tìm thấy hoạt động với ID: ${evaluation.activityId}` });
+    // Validate activities...
+    for (const ev of evaluations) {
+      if (!await ThoiGianBieu.findById(ev.activityId)) {
+        return res.status(404)
+          .json({ message: `Không tìm thấy hoạt động ID: ${ev.activityId}` });
       }
     }
 
-    // Save evaluations to the database
-    const newEvaluation = new Evaluation({
+    const newEval = new Evaluation({
       child: childId,
       date,
+      totalScore,
       evaluations,
     });
+    await newEval.save();
 
-    console.log("Đánh giá:", newEvaluation);
-    
-    await newEvaluation.save();
-
-    res.status(201).json({ message: "Hoàn tất đánh giá thành công!", data: newEvaluation });
+    res.status(201).json({
+      message: "Hoàn tất đánh giá thành công!",
+      data: newEval,
+    });
   } catch (error) {
-    console.error("Lỗi khi hoàn tất đánh giá:", error.message);
+    console.error(error);
     res.status(500).json({ message: "Lỗi server, vui lòng thử lại sau!" });
   }
 };
+
 
 const getEvaluationByChildAndDate = async (req, res) => {
   try {
@@ -62,41 +61,39 @@ const getEvaluationByChildAndDate = async (req, res) => {
 
 const updateEvaluation = async (req, res) => {
   try {
-    const { childId, date, evaluations } = req.body;
-
-    if (!childId || !date || !evaluations || !Array.isArray(evaluations)) {
+    const { childId, date, totalScore, evaluations } = req.body;
+    if (!childId || !date || !Array.isArray(evaluations)) {
       return res.status(400).json({ message: "Thiếu dữ liệu đầu vào!" });
     }
 
-    // Validate từng hoạt động trong đánh giá
-    for (const evaluation of evaluations) {
-      const activity = await ThoiGianBieu.findById(evaluation.activityId);
-      if (!activity) {
-        return res.status(404).json({
-          message: `Không tìm thấy hoạt động với ID: ${evaluation.activityId}`,
-        });
+    // Validate activities...
+    for (const ev of evaluations) {
+      if (!await ThoiGianBieu.findById(ev.activityId)) {
+        return res.status(404)
+          .json({ message: `Không tìm thấy hoạt động ID: ${ev.activityId}` });
       }
     }
 
-    // Cập nhật đánh giá trong cơ sở dữ liệu
-    const updatedEvaluation = await Evaluation.findOneAndUpdate(
+    const updatedEval = await Evaluation.findOneAndUpdate(
       { child: childId, date },
-      { evaluations },
+      { totalScore, evaluations },
       { new: true }
     );
 
-    if (!updatedEvaluation) {
+    if (!updatedEval) {
       return res.status(404).json({ message: "Không tìm thấy đánh giá để cập nhật!" });
     }
 
-    res
-      .status(200)
-      .json({ message: "Cập nhật đánh giá thành công!", data: updatedEvaluation });
+    res.status(200).json({
+      message: "Cập nhật đánh giá thành công!",
+      data: updatedEval,
+    });
   } catch (error) {
-    console.error("Lỗi khi cập nhật đánh giá:", error.message);
+    console.error(error);
     res.status(500).json({ message: "Lỗi server, vui lòng thử lại sau!" });
   }
 };
+
 
 module.exports = {
   completeEvaluation,

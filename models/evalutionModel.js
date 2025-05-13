@@ -10,6 +10,10 @@ const evaluationSchema = new mongoose.Schema({
     type: String, // Store date as "YYYY-MM-DD"
     required: true,
   },
+  totalScore: {
+    type: Number,
+    default: 0,
+  },
   evaluations: [
     {
       activityId: {

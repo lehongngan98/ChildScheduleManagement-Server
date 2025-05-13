@@ -5,7 +5,7 @@ const ThoiGianBieu = require("../models/thoiGianBieu");
 // Thêm thời gian biểu mới cho 1 trẻ
 const createThoiGianBieu = async (req, res) => {
   const userId = req.user._id;
-  const { title, startTime, endTime, repeat, note ,dateFrom} = req.body;
+  const { title, startTime, endTime, repeat, note ,dateFrom, score} = req.body;
   const { childId } = req.params; // Lấy childId từ params
   console.log(req.body);
   console.log("childId", childId);
@@ -30,6 +30,7 @@ const createThoiGianBieu = async (req, res) => {
     title,
     startTime,
     endTime,
+    score,
     repeat,
     note,
   });
@@ -85,7 +86,7 @@ const getThoiGianBieuByChild = async (req, res) => {
 const updateThoiGianBieu = async (req, res) => {
   const userId = req.user._id;
   const { id } = req.params;
-  const { title, startTime, endTime, repeat, note } = req.body;
+  const { title, startTime, endTime, repeat, note ,score} = req.body;
   const { childId } = req.params; // Lấy childId từ params
 
   const schedule = await ThoiGianBieu.findById(id);
@@ -103,6 +104,7 @@ const updateThoiGianBieu = async (req, res) => {
   schedule.endTime = endTime || schedule.endTime;
   schedule.repeat = repeat || schedule.repeat;
   schedule.note = note || schedule.note;
+  schedule.score = score || schedule.score;
 
   await schedule.save();
 
