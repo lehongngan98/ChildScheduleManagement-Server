@@ -96,13 +96,21 @@ const getScheduleById = async (req, res) => {
   }
 };
 
+// controllers/scheduleController.js
 const updateSchedule = async (req, res) => {
   try {
     const scheduleId = req.params.id;
-    const updates = req.body;
+    const updates = { ...req.body };
+
+    // Chuyển chuỗi ngày về Date
+    if (updates.dateFrom) {
+      updates.dateFrom = dayjs(updates.dateFrom, "DD/MM/YYYY").toDate();
+    }
+    if (updates.dateTo) {
+      updates.dateTo = dayjs(updates.dateTo, "DD/MM/YYYY").toDate();
+    }
 
     const schedule = await Schedule.findById(scheduleId);
-
     if (!schedule) {
       return res.status(404).json({ message: "Không tìm thấy thời gian biểu" });
     }
@@ -116,6 +124,30 @@ const updateSchedule = async (req, res) => {
     res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 };
+
+
+// const updateSchedule = async (req, res) => {
+//   try {
+//     const scheduleId = req.params.id;
+//     const updates = req.body;
+//     console.log("Updates:", updates);
+    
+
+//     const schedule = await Schedule.findById(scheduleId);
+
+//     if (!schedule) {
+//       return res.status(404).json({ message: "Không tìm thấy thời gian biểu" });
+//     }
+
+//     Object.assign(schedule, updates);
+//     await schedule.save();
+
+//     res.status(200).json({ message: "Cập nhật thành công", schedule });
+//   } catch (error) {
+//     console.error("Lỗi cập nhật thời gian biểu:", error);
+//     res.status(500).json({ message: "Lỗi server", error: error.message });
+//   }
+// };
 
 const deleteSchedule = async (req, res) => {
   try {

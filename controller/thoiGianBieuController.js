@@ -72,6 +72,8 @@ const getThoiGianBieuByChild = async (req, res) => {
     }).sort({
       startTime: 1,
     });
+    console.log(schedules);
+    
     res.status(200).json({
       message: "Successfully retrieved the schedule!",
       data: schedules,
@@ -86,7 +88,11 @@ const getThoiGianBieuByChild = async (req, res) => {
 const updateThoiGianBieu = async (req, res) => {
   const userId = req.user._id;
   const { id } = req.params;
-  const { title, startTime, endTime, repeat, note ,score} = req.body;
+
+
+
+  const { title, startTime, endTime, repeat, note ,score,dateFrom} = req.body;
+
   const { childId } = req.params; // Lấy childId từ params
 
   const schedule = await ThoiGianBieu.findById(id);
@@ -105,6 +111,8 @@ const updateThoiGianBieu = async (req, res) => {
   schedule.repeat = repeat || schedule.repeat;
   schedule.note = note || schedule.note;
   schedule.score = score || schedule.score;
+
+  schedule.dateFrom = dateFrom || schedule.dateFrom;
 
   await schedule.save();
 
